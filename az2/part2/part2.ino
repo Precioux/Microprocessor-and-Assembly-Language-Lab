@@ -8,6 +8,7 @@ char keys[ROW_NUM][COLUMN_NUM] = {
   {'7','8','9'},
   {'*','0','#'}
 };
+
 int incomingByte = 0; // for incoming serial data
 String inputString;
 long inputInt;
@@ -30,7 +31,7 @@ void loop() {
       inputString += key;               // append new character to input string
       inputInt = inputString.toInt(); // YOU GOT AN INTEGER NUMBER
       inputString = ""; 
-      showUp(inputInt);
+      Serial.println(inputInt);
     } else if (key == '#' || key == '*' ) {
         inputString = "";               // clear input
     }
