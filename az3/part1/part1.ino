@@ -7,20 +7,19 @@ LiquidCrystal lcd(RS, EN, D4, D5, D6, D7);
 
 void setup() {
 lcd.begin(16, 2);
-setTime(12,0,0,2,3,22);  
+setTime(12,0,0,5,3,22);  
 lcd.setCursor(0, 0);     
+int i=0;
+int j=0;
+while(true){
+lcd.setCursor(i,j);
 lcd.print(year());
 lcd.print("-");
 lcd.print(month());
 lcd.print("-");
 lcd.print(day());
-
-int i=9;
-int j=0;
-while(true){
-lcd.setCursor(i,j);
-lcd.print(".");
 delay(1000);
+lcd.clear();
 i++;
 if(i==15){
   if(j==1)

@@ -7,11 +7,14 @@ LiquidCrystal lcd(RS, EN, D4, D5, D6, D7);
 void setup() {
 lcd.begin(16, 2);
 Serial.begin(9600);  
+ int myTime=250;
+  Serial.setTimeout(myTime);
 }
 
 void loop(){
+ 
   while(Serial.available() > 0 ){
-    String str = Serial.readString();
+    String str = Serial.readStringUntil('\n');
     printer(str,0);
     for(int i=0;i<str.length();i++)
     {
