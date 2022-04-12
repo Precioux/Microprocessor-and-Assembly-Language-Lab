@@ -3,7 +3,7 @@
 #include<string.h>
 
 // setup LCD
-const int rs = 13, en = 12, d4 = 8, d5 = 9, d6 = 10, d7 =11;
+const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 =2;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
 // setup keypad

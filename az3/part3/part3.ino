@@ -8,7 +8,7 @@ void setup() {
 lcd.begin(16, 2);
 Serial.begin(9600);  
  int myTime=250;
-  Serial.setTimeout(myTime);
+
 }
 
 void loop(){
@@ -60,7 +60,7 @@ void printer(String data,int mode)
   if(mode==0){
   lcd.clear();
   lcd.print(data);
- // Serial.println(data);
+
   }
    if(mode==1){
   lcd.setCursor(0,1);
