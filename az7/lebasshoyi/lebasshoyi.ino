@@ -79,6 +79,7 @@ void DetectButtons()
     {
       Serial.println ("Starting washing machine.."); 
       Serial.println ("Enter duration of each washing part: ");
+      digitalWrite(49,HIGH);
       Number = 0;
     }
     
@@ -174,6 +175,7 @@ void DetectButtons()
         Number = 0;
       }
         else if (n_time_setted ==3){
+          Serial.println("Duration of part 3 added successfully");
           Number = 0;
           Serial.println ("Times Setted");
           Serial.println ("Enter Operation : ");
@@ -181,7 +183,7 @@ void DetectButtons()
           Serial.println ("1 for washing with detergent");
           Serial.println ("2 for washing with water");
           Serial.println ("3 for drying");
-          lcd.print("Enter #OP");
+          lcd.print("Enter #OP : ");
           n_time_setted++;
         }
         else if(n_time_setted ==4) {
@@ -191,7 +193,7 @@ void DetectButtons()
           Wire.write(0xAA);
           Wire.write(current_state);
           Wire.endTransmission();
-          Serial.println ("Current state Setted");
+          Serial.print ("Current state Setted : ");
           Serial.println (current_state+1);
           n_time_setted++;
           Number = 0;
@@ -207,9 +209,9 @@ void DetectButtons()
       Wire.write(0x00);
       Wire.write(0xAA);
       Wire.endTransmission();
-      Wire.requestFrom(DEVICE_ADDRESS,1);
+      Wire.requestFrom(DEVICE_ADDRESS,1); //This function is used by the controller device to request bytes from a peripheral device. The bytes may then be retrieved with the available() and read() functions. 
       current_state = Wire.read()+1;
-      Serial.println("Last State is");
+      Serial.print("Last State is ");
       Serial.println(current_state);
     } 
            if (key == '-')
@@ -226,7 +228,7 @@ void DetectButtons()
           Wire.endTransmission();
           lcd.print("Reseted");
           n_time_setted =3;
-          Serial.println("Current State IS:");
+          Serial.print("Current State IS : ");
           Serial.println(current_state+1);
           delay(1000);
           lcd.clear();
