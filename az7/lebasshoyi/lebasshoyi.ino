@@ -19,15 +19,15 @@ char keymap[numRows][numCols]=
   byte rowPins[numRows] = {37,35,33,31}; //Rows 0 to 3  
   byte colPins[numCols]= {23,25,27,29}; //Columns 0 to 3  
   char key;  
-  long int Number = 0 ;
-  int current_state = 0;
+  long int Number = 0 ; //for entered number
+  int current_state = 0;  //for showing states
 Keypad myKeypad= Keypad(makeKeymap(keymap), rowPins, colPins, numRows, numCols);
 void setup() {
-  Wire.begin();
+  Wire.begin(); //This function initializes the Wire library and join the I2C bus as a controller or a peripheral
   Serial.begin(9600);
-  Wire.beginTransmission(DEVICE_ADDRESS);
-  Wire.write(0x00);
-  Wire.write(0xAA);
+  Wire.beginTransmission(DEVICE_ADDRESS); //This function begins a transmission to the I2C peripheral device with the given address. Subsequently, queue bytes for transmission with the write() function and transmit them by calling endTransmission().
+  Wire.write(0x00); //??
+  Wire.write(0xAA); //??
   Wire.write(current_state);
   Wire.endTransmission();
   pinMode(49,OUTPUT);
@@ -36,9 +36,9 @@ void setup() {
   pinMode(52,OUTPUT);
   pinMode(53,OUTPUT);
 }
-int times[] ={0,0,0,0};
-int n_time_setted = 0;
-int stopped = 1;
+int times[] ={0,0,0,0}; // array of given times for each procedure 
+int n_time_setted = 0; //number of given times
+int stopped = 1; // checking flag for stopping
 void loop() {
    key = myKeypad.getKey();
   if (key!=NO_KEY){
@@ -76,7 +76,11 @@ void loop() {
 void DetectButtons()
 { 
     if (key=='O')
-    {Serial.println ("Start"); Number = 0;}
+    {
+      Serial.println ("Starting washing machine.."); 
+      Serial.println ("Enter duration of each washing part: ");
+      Number = 0;
+    }
     
      if (key == '1') //If Button 1 is pressed
     {Serial.println ("Button 1"); 
@@ -160,7 +164,11 @@ void DetectButtons()
     }  
     if (key == '='){
       if(n_time_setted < 3){
-        Serial.println ("Number is:");
+        Serial.print("Duration of part " );
+        Serial.print(n_time_setted);
+        Serial.print(" added successfully");
+        Serial.println("");
+        Serial.print("Number is: ");
         Serial.println(Number);
         times[n_time_setted++] = Number;
         Number = 0;
@@ -168,7 +176,11 @@ void DetectButtons()
         else if (n_time_setted ==3){
           Number = 0;
           Serial.println ("Times Setted");
-          Serial.println ("Enter #OP");
+          Serial.println ("Enter Operation : ");
+          Serial.println ("0 for pre washing");
+          Serial.println ("1 for washing with detergent");
+          Serial.println ("2 for washing with water");
+          Serial.println ("3 for drying");
           lcd.print("Enter #OP");
           n_time_setted++;
         }
