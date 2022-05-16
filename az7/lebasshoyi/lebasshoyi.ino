@@ -20,14 +20,15 @@ char keymap[numRows][numCols]=
   byte colPins[numCols]= {23,25,27,29}; //Columns 0 to 3  
   char key;  
   long int Number = 0 ; //for entered number
+  int begin = 0;
   int current_state = 0;  //for showing states
 Keypad myKeypad= Keypad(makeKeymap(keymap), rowPins, colPins, numRows, numCols);
 void setup() {
   Wire.begin(); //This function initializes the Wire library and join the I2C bus as a controller or a peripheral
   Serial.begin(9600);
   Wire.beginTransmission(DEVICE_ADDRESS); //This function begins a transmission to the I2C peripheral device with the given address. Subsequently, queue bytes for transmission with the write() function and transmit them by calling endTransmission().
-  Wire.write(0x00); //??
-  Wire.write(0xAA); //??
+  Wire.write(0x00); //address to write and read
+  Wire.write(0xAA); //address to write and read
   Wire.write(current_state);
   Wire.endTransmission();
   pinMode(49,OUTPUT);
@@ -47,12 +48,15 @@ void loop() {
   lcd.print(Number);
   }
   if (stopped == 0){
+ 
   for(int i=0;i < current_state;i++){
     digitalWrite(50+i,HIGH);
   }
   if (n_time_setted > 4 & current_state <= 3){
-      for (int i=current_state ;i<4;i++)
+      int counter = current_state;
+      while (counter < 4 && stopped == 0)
       {
+         counter = current_state;
         Serial.print("Current State : ");
         switch(current_state){
           case 0 :
@@ -68,43 +72,48 @@ void loop() {
             Serial.println("Drying");
             break;          
         }
-       // Serial.println(current_state);
-       // Serial.println(i);
        Serial.println("Waiting for process to end..");
-        digitalWrite(50+i,HIGH); //turning on dedicated led
+        digitalWrite(50+counter,HIGH); //turning on dedicated led
       
-        for(int j =0;j<times[i];j++){ //printing count down time on LCD
-            lcd.print(times[i]-j);
+        for(int j =0;j<times[counter];j++){ //printing count down time on LCD
+            lcd.print(times[counter]-j);
             delay(1000);
             lcd.clear();
         }
           Wire.beginTransmission(DEVICE_ADDRESS); //enter data to EEPROM
           Wire.write(0x00);
           Wire.write(0xAA);
-          Wire.write(i);
+          Wire.write(counter);
           Wire.endTransmission();
-           current_state++;  // go to next state
+          key = myKeypad.getKey();
+          if (key==NO_KEY) 
+              current_state++;  // go to next state
+          else {
+            if( key == '/'){
+          stopped = 1;
+          lcd.clear();
+          lcd.print("STOPPED");
+          delay(1000);
+          lcd.clear();
+            }
+            else current_state++;
+          }
       }
       
   }
-  if(current_state==4)
-    Serial.println("Done!");
-    digitalWrite(49, LOW);
-    digitalWrite(50, LOW);
-    digitalWrite(51, LOW);
-    digitalWrite(52, LOW);
-    digitalWrite(53, LOW);
 
   }
 }
 void DetectButtons()
 { 
-    if (key=='O')
+    if (key=='O' && begin == 0)
     {
       Serial.println ("Starting washing machine.."); 
       Serial.println ("Enter duration of each washing part: ");
       digitalWrite(49,HIGH);
       Number = 0;
+      begin =1;
+      stopped = 0;
     }
     
      if (key == '1') //If Button 1 is pressed
@@ -228,6 +237,11 @@ void DetectButtons()
     }
        if (key == '*')
     {
+      stopped = 0;
+      lcd.clear();
+      lcd.print("Started again");
+      delay(1000);
+      lcd.clear();
       Serial.println ("Restoring Last State");
       Wire.beginTransmission(DEVICE_ADDRESS);
       Wire.write(0x00);
@@ -235,7 +249,7 @@ void DetectButtons()
       Wire.endTransmission();
       Wire.requestFrom(DEVICE_ADDRESS,1); //This function is used by the controller device to request bytes from a peripheral device. The bytes may then be retrieved with the available() and read() functions. 
       current_state = Wire.read()+1;
-      Serial.print("Last State is ");
+      Serial.print("Last State was ");
       Serial.println(current_state);
     } 
            if (key == '-')
@@ -255,6 +269,7 @@ void DetectButtons()
           Serial.print("Current State IS : ");
           Serial.println(current_state+1);
           delay(1000);
+          begin = 0;
           lcd.clear();
     } 
              if (key == '/')
@@ -265,12 +280,12 @@ void DetectButtons()
           delay(1000);
           lcd.clear();
     }
-        if (key == 'O')
-    {
-          stopped = 0;
-          lcd.clear();
-          lcd.print("Started");
-          delay(1000);
-          lcd.clear();
-    }
+//        if (key == 'O')
+//    {
+//          stopped = 0;
+//          lcd.clear();
+//          lcd.print("Started");
+//          delay(1000);
+//          lcd.clear();
+//    }
 }
