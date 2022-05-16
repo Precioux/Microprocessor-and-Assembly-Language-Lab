@@ -53,23 +53,47 @@ void loop() {
   if (n_time_setted > 4 & current_state <= 3){
       for (int i=current_state ;i<4;i++)
       {
-        Serial.println(current_state);
-        Serial.println(i);
-        
-        digitalWrite(50+i,HIGH);
-        for(int j =0;j<times[i];j++){
+        Serial.print("Current State : ");
+        switch(current_state){
+          case 0 :
+            Serial.println("Pre washing");
+            break;
+          case 1 :
+            Serial.println("Washing with detergent");
+            break;
+          case 2 :
+            Serial.println("Washing with water");
+            break;                      
+          case 3 :
+            Serial.println("Drying");
+            break;          
+        }
+       // Serial.println(current_state);
+       // Serial.println(i);
+       Serial.println("Waiting for process to end..");
+        digitalWrite(50+i,HIGH); //turning on dedicated led
+      
+        for(int j =0;j<times[i];j++){ //printing count down time on LCD
             lcd.print(times[i]-j);
             delay(1000);
             lcd.clear();
         }
-          Wire.beginTransmission(DEVICE_ADDRESS);
+          Wire.beginTransmission(DEVICE_ADDRESS); //enter data to EEPROM
           Wire.write(0x00);
           Wire.write(0xAA);
           Wire.write(i);
           Wire.endTransmission();
+           current_state++;  // go to next state
       }
-       current_state++;
+      
   }
+  if(current_state==4)
+    Serial.println("Done!");
+    digitalWrite(49, LOW);
+    digitalWrite(50, LOW);
+    digitalWrite(51, LOW);
+    digitalWrite(52, LOW);
+    digitalWrite(53, LOW);
 
   }
 }
@@ -179,15 +203,15 @@ void DetectButtons()
           Number = 0;
           Serial.println ("Times Setted");
           Serial.println ("Enter Operation : ");
-          Serial.println ("0 for pre washing");
-          Serial.println ("1 for washing with detergent");
-          Serial.println ("2 for washing with water");
-          Serial.println ("3 for drying");
+          Serial.println ("1 for pre washing");
+          Serial.println ("2 for washing with detergent");
+          Serial.println ("3 for washing with water");
+          Serial.println ("4 for drying");
           lcd.print("Enter #OP : ");
           n_time_setted++;
         }
         else if(n_time_setted ==4) {
-          current_state = Number-1;
+          current_state = Number - 1; //setting current state
           Wire.beginTransmission(DEVICE_ADDRESS);
           Wire.write(0x00);
           Wire.write(0xAA);
