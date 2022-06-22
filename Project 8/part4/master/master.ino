@@ -28,14 +28,14 @@ void loop() {
   {
     delay(400);
     analogValue = analogRead(tempPIN);
-    mapped = map(analogValue, 0, 306, 0, 150); 
+    mapped = map(analogValue, 0, 306, 0, 150);  //*************
     sendData(mapped, turn);
     turn = 2;
     delay(200);
   } else if (turn == 2){
     delay(200);
     analogValue = analogRead(lightPIN);
-    mapped = map(analogValue, 0, 1023, 0, 100);  
+    mapped = map(analogValue, 0, 1023, 0, 100);  //*****************
     sendData(mapped, turn);
     turn = 1;
     delay(200);
